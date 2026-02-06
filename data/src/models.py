@@ -14,9 +14,5 @@ class ModelTrainer:
             joblib.dump(self.vectorizer, 'models/vectorizer.pkl')
         else:
             vectors = self.vectorizer.transform(texts)
-    trainer = ModelTrainer()
-    X = trainer.vectorize_data(df['cleaned_text'])
-
-    print(f"Matrix is created! Size: {X.shape}") 
 
         return vectors
