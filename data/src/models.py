@@ -1,40 +1,34 @@
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report, accuracy_score
+import joblib
 
 class ModelTrainer:
-    def __init__(self, vectorizer):
-        self.vectorizer = vectorizer
-        self.best_model = None
+    def __init__(self, max_features=5000):
+        self.vectorizer = TfidfVectorizer(max_features=max_features, ngram_range=(1, 2))
+        self.model = None
+
+    def vectorize_data(self, texts):
+        return self.vectorizer.fit_transform(texts)
 
     def compare_models(self, X_train, X_test, y_train, y_test):
         models = {
             'Naive Bayes': MultinomialNB(),
             'Logistic Regression': LogisticRegression(max_iter=1000)
         }
-        
+        print("\n--- Model Comparison ---")
         results = {}
-        for name, model in models.items():
-            model.fit(X_train, y_train)
-            preds = model.predict(X_test)
-            acc = accuracy_score(y_test, preds)
-            results[name] = acc
+        for name, m in models.items():
+            m.fit(X_train, y_train)
+            acc = accuracy_score(y_test, m.predict(X_test))
             print(f"{name} Accuracy: {acc:.4f}")
-        
+            results[name] = acc
         return results
 
     def fine_tune_logistic(self, X_train, y_train):
-        print("\nLooking for best parameters (GridSearch)...")
-        
-        param_grid = {
-            'C': [0.1, 1, 10],       # Коэффициент регуляризации
-            'penalty': ['l2']        # Тип штрафа
-        }
-        
-        grid = GridSearchCV(LogisticRegression(max_iter=1000), param_grid, cv=3, scoring='accuracy')
-        grid.fit(X_train, y_train)
-        
-        print(f"Best parameters: {grid.best_params_}")
-        self.best_model = grid.best_estimator_
-        return self.best_model
+        self.model = LogisticRegression(class_weight='balanced', max_iter=1000)
+        self.model.fit(X_train, y_train)
+        print("\n--- The final model is trained with class balance ---")
+        return self.model
