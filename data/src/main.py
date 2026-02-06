@@ -12,3 +12,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    trainer = ModelTrainer()
+    X = trainer.vectorize_data(df['cleaned_text'])
+
+    print(f"Matrix is created! Size: {X.shape}") 
+
