@@ -9,7 +9,7 @@ def main():
     trainer.compare_models(X_train, X_test, y_train, y_test)
     best_model = trainer.fine_tune_logistic(X_train, y_train)
     final_preds = best_model.predict(X_test)
-    print(f"Финальная точность после тюнинга: {accuracy_score(y_test, final_preds):.4f}")
+    print(f"final accurancy: {accuracy_score(y_test, final_preds):.4f}")
 
 if __name__ == "__main__":
     main()
